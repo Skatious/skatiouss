@@ -120,7 +120,7 @@ export default function CheckoutPage() {
 
   // Helper to create Razorpay order via serverless API
   const createRazorpayOrder = async (finalPrice: number, tempOrderNumber: string) => {
-    const response = await fetch('https://skatious-razorpay-server.vercel.app/api/create-razorpay-order', {
+    const response = await fetch('https://skatious-razorpay-server-wkvb.vercel.app/api/create-razorpay-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
