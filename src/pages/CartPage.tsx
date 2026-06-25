@@ -114,6 +114,12 @@ export default function CartPage() {
                       {item.product?.name}
                     </h3>
                     <p className="font-body text-gray-600">Size: {item.size}</p>
+                    {item.custom_name && (
+                      <p className="font-body text-gray-600 text-sm">Name: <span className="font-medium uppercase">{item.custom_name}</span></p>
+                    )}
+                    {item.custom_number && (
+                      <p className="font-body text-gray-600 text-sm">Number: <span className="font-medium">{item.custom_number}</span></p>
+                    )}
                     <p className="font-heading text-lg font-semibold text-emerald-600">
                       ₹{item.product?.price.toFixed(2)}
                     </p>

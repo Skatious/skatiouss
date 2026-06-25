@@ -53,6 +53,12 @@ export default function ProductDetailPage() {
   const [isEditingReview, setIsEditingReview] = useState(false)
   const [reviewError, setReviewError] = useState('')
 
+  // Custom name/number state (Blue Lock only)
+  const [wantsCustomName, setWantsCustomName] = useState(false)
+  const [wantsCustomNumber, setWantsCustomNumber] = useState(false)
+  const [customName, setCustomName] = useState('')
+  const [customNumber, setCustomNumber] = useState('')
+
   useEffect(() => {
     if (productId) {
       loadProduct()
@@ -99,7 +105,18 @@ export default function ProductDetailPage() {
       }
 
       if (data) {
-        setProduct(data)
+        // Resolve category
+        let categoryObj: { name: string } | undefined = undefined
+        if (data.categories) {
+          if (Array.isArray(data.categories)) {
+            if (data.categories[0]?.name) {
+              categoryObj = { name: data.categories[0].name }
+            }
+          } else if ((data.categories as { name?: string })?.name) {
+            categoryObj = { name: (data.categories as { name: string }).name }
+          }
+        }
+        setProduct({ ...data, category: categoryObj })
         if (data.sizes.length > 0) {
           setSelectedSize(data.sizes[0])
         }
@@ -197,11 +214,15 @@ export default function ProductDetailPage() {
     }
   }
 
+  const isBlueLock = product?.category?.name === 'Blue Lock'
+
   const handleAddToCart = async () => {
     if (!product || !selectedSize) return
     
     setIsAdding(true)
-    await addToCart(product.id, selectedSize, 1)
+    const finalCustomName = (isBlueLock && wantsCustomName && customName.trim()) ? customName.trim() : undefined
+    const finalCustomNumber = (isBlueLock && wantsCustomNumber && customNumber.trim()) ? customNumber.trim() : undefined
+    await addToCart(product.id, selectedSize, 1, finalCustomName, finalCustomNumber)
     setIsAdding(false)
   }
 
@@ -480,6 +501,68 @@ export default function ProductDetailPage() {
 
             {/* Add to Cart */}
             <div className="space-y-4">
+              {/* Custom Name & Number (Blue Lock only) */}
+              {isBlueLock && product.in_stock && (
+                <div className="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50">
+                  <h3 className="font-heading text-lg font-semibold text-gray-900">Customization</h3>
+                  <p className="font-body text-sm text-gray-500">Add a custom name or number to your jersey.</p>
+
+                  {/* Custom Name Toggle + Input */}
+                  <div>
+                    <label className="flex items-center gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={wantsCustomName}
+                        onChange={(e) => {
+                          setWantsCustomName(e.target.checked)
+                          if (!e.target.checked) setCustomName('')
+                        }}
+                        className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span className="font-heading text-sm font-medium text-gray-700">Add Custom Name</span>
+                    </label>
+                    {wantsCustomName && (
+                      <input
+                        type="text"
+                        value={customName}
+                        onChange={(e) => setCustomName(e.target.value)}
+                        placeholder="e.g. ISAGI"
+                        maxLength={20}
+                        className="mt-2 w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 font-body text-sm uppercase"
+                      />
+                    )}
+                  </div>
+
+                  {/* Custom Number Toggle + Input */}
+                  <div>
+                    <label className="flex items-center gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={wantsCustomNumber}
+                        onChange={(e) => {
+                          setWantsCustomNumber(e.target.checked)
+                          if (!e.target.checked) setCustomNumber('')
+                        }}
+                        className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span className="font-heading text-sm font-medium text-gray-700">Add Custom Number</span>
+                    </label>
+                    {wantsCustomNumber && (
+                      <input
+                        type="text"
+                        value={customNumber}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '')
+                          if (val.length <= 2) setCustomNumber(val)
+                        }}
+                        placeholder="e.g. 11"
+                        maxLength={2}
+                        className="mt-2 w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 font-body text-sm"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
               {product.in_stock ? (
                 <button
                   onClick={handleAddToCart}

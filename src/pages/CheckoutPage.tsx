@@ -331,7 +331,9 @@ export default function CheckoutPage() {
         product_image_url: item.product?.product_images?.[0]?.image_url || '',
         size: item.size,
         quantity: item.quantity,
-        item_total: (item.product?.price || 0) * item.quantity
+        item_total: (item.product?.price || 0) * item.quantity,
+        custom_name: item.custom_name || '',
+        custom_number: item.custom_number || ''
       }))
 
       const { error: itemsError } = await supabase
@@ -440,7 +442,9 @@ export default function CheckoutPage() {
         product_image_url: item.product?.product_images?.[0]?.image_url || '',
         size: item.size,
         quantity: item.quantity,
-        item_total: (item.product?.price || 0) * item.quantity
+        item_total: (item.product?.price || 0) * item.quantity,
+        custom_name: item.custom_name || '',
+        custom_number: item.custom_number || ''
       }))
 
       // Initialize Razorpay payment with order data (including shipping charge)

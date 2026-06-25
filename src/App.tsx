@@ -16,6 +16,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import BlueLockPage from './pages/BlueLockPage'
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/blue-lock" element={<BlueLockPage />} />
             </Routes>
           </div>
         </Router>

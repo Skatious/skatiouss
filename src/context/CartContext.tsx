@@ -21,6 +21,8 @@ interface CartItem {
   quantity: number
   user_id: string | null
   session_id: string | null
+  custom_name: string | null
+  custom_number: string | null
   product?: Product
 }
 
@@ -57,13 +59,15 @@ interface RawCartItem {
   quantity: number
   user_id: string | null
   session_id: string | null
+  custom_name: string | null
+  custom_number: string | null
   product: RawProduct | null
 }
 
 interface CartContextType {
   items: CartItem[]
   loading: boolean
-  addToCart: (productId: string, size: string, quantity?: number) => Promise<void>
+  addToCart: (productId: string, size: string, quantity?: number, customName?: string, customNumber?: string) => Promise<void>
   updateQuantity: (itemId: string, quantity: number) => Promise<void>
   removeFromCart: (itemId: string) => Promise<void>
   clearCart: () => Promise<void>
@@ -187,6 +191,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           quantity: item.quantity,
           user_id: item.user_id,
           session_id: item.session_id,
+          custom_name: item.custom_name || null,
+          custom_number: item.custom_number || null,
           product: item.product ? {
             name: item.product.name,
             price: item.product.price,
@@ -211,24 +217,31 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const addToCart = async (productId: string, size: string, quantity: number = 1) => {
-    // Check if item already exists
-    const existingItem = items.find(
-      item => item.product_id === productId && item.size === size
-    )
+  const addToCart = async (productId: string, size: string, quantity: number = 1, customName?: string, customNumber?: string) => {
+    const hasCustomization = !!(customName || customNumber)
 
-    if (existingItem) {
-      await updateQuantity(existingItem.id, existingItem.quantity + quantity)
-      return
+    // Check if item already exists (customized items are always unique)
+    if (!hasCustomization) {
+      const existingItem = items.find(
+        item => item.product_id === productId && item.size === size && !item.custom_name && !item.custom_number
+      )
+
+      if (existingItem) {
+        await updateQuantity(existingItem.id, existingItem.quantity + quantity)
+        return
+      }
     }
 
-    const cartItem = {
+    const cartItem: Record<string, any> = {
       product_id: productId,
       size,
       quantity,
       user_id: user?.id || null,
       session_id: user ? null : sessionId,
     }
+
+    if (customName) cartItem.custom_name = customName
+    if (customNumber) cartItem.custom_number = customNumber
 
     const { error } = await supabase.from('cart_items').insert(cartItem)
     if (!error) {

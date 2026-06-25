@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import PlayersShowcase from '../components/PlayersShowcase';
+import ExploreSection from '../components/ExploreSection';
 
 interface Product {
   id: string;
@@ -494,6 +495,9 @@ export default function HomePage() {
           </motion.div>
         </motion.div>
       </section>
+
+      {/* Explore Section - Blog, Replica, Blue Lock */}
+      <ExploreSection />
 
       {/* Features Section with Scroll Reveal */}
       <motion.section 

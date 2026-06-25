@@ -54,6 +54,8 @@ interface Order {
     size: string
     quantity: number
     item_total: number
+    custom_name: string | null
+    custom_number: string | null
   }[]
 }
 
@@ -214,7 +216,7 @@ export default function AdminPage() {
       // Fetch order items for all orders
       const { data: orderItemsData, error: itemsError } = await supabase
         .from('order_items')
-        .select('order_id, product_name, product_image_url, size, quantity, item_total')
+        .select('order_id, product_name, product_image_url, size, quantity, item_total, custom_name, custom_number')
         .in('order_id', orderIds)
 
       if (itemsError) {
@@ -692,11 +694,22 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredOrders.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50">
+                    {filteredOrders.map((order) => {
+                      const isBlueLockOrder = order.order_items.some(
+                        item => item.custom_name || item.custom_number
+                      )
+                      return (
+                      <tr key={order.id} className={`hover:bg-blue-50 transition-colors ${
+                        isBlueLockOrder ? 'bg-blue-50/40 border-l-4 border-l-blue-400' : ''
+                      }`}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="font-medium text-gray-900 font-heading">#{order.order_number}</div>
                           <div className="text-sm text-gray-500 font-body">{order.order_items.length} items</div>
+                          {isBlueLockOrder && (
+                            <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-700">
+                              ⚡ Blue Lock
+                            </span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="font-medium text-gray-900 font-body">{order.customer_name}</div>
@@ -740,7 +753,8 @@ export default function AdminPage() {
                           </button>
                         </td>
                       </tr>
-                    ))}
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -1149,11 +1163,22 @@ export default function AdminPage() {
         {showOrderModal && selectedOrder && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-200">
+              <div className={`p-6 border-b ${
+                selectedOrder.order_items.some(i => i.custom_name || i.custom_number)
+                  ? 'border-blue-200 bg-blue-50/50'
+                  : 'border-gray-200'
+              }`}>
                 <div className="flex justify-between items-center">
-                  <h3 className="font-heading text-xl font-semibold text-gray-900">
-                    Order Details - #{selectedOrder.order_number}
-                  </h3>
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-heading text-xl font-semibold text-gray-900">
+                      Order Details - #{selectedOrder.order_number}
+                    </h3>
+                    {selectedOrder.order_items.some(i => i.custom_name || i.custom_number) && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
+                        ⚡ Blue Lock Order
+                      </span>
+                    )}
+                  </div>
                   <button
                     onClick={() => setShowOrderModal(false)}
                     className="text-gray-400 hover:text-gray-600"
@@ -1234,28 +1259,49 @@ export default function AdminPage() {
                   <h4 className="font-heading text-lg font-semibold text-gray-900 mb-3">Order Items</h4>
                   <div className="bg-gray-50 rounded-lg p-4">
                     {selectedOrder.order_items.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0">
-                        <div className="flex items-center space-x-3">
-                          {/* Product Image */}
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                            {item.product_image_url ? (
-                              <img
-                                src={item.product_image_url}
-                                alt={item.product_name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                                <Package className="h-6 w-6 text-gray-500" />
+                      <div key={index} className={`py-3 border-b border-gray-200 last:border-b-0 ${
+                        item.custom_name || item.custom_number ? 'bg-blue-50/60 -mx-4 px-4 rounded-lg' : ''
+                      }`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            {/* Product Image */}
+                            <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                              {item.product_image_url ? (
+                                <img
+                                  src={item.product_image_url}
+                                  alt={item.product_name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                                  <Package className="h-6 w-6 text-gray-500" />
+                                </div>
+                              )}
+                            </div>
+                            {/* Product Details */}
+                            <span className="font-body text-gray-700">
+                              {item.product_name} ({item.size}) × {item.quantity}
+                            </span>
+                          </div>
+                          <span className="font-semibold">₹{item.item_total.toFixed(2)}</span>
+                        </div>
+                        {/* Custom Fields */}
+                        {(item.custom_name || item.custom_number) && (
+                          <div className="mt-2 ml-15 flex flex-wrap gap-3 pl-15">
+                            {item.custom_name && (
+                              <div className="flex items-center gap-1.5 text-xs font-medium text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full">
+                                <span className="text-blue-500">Name:</span>
+                                <span className="uppercase tracking-wide font-bold">{item.custom_name}</span>
+                              </div>
+                            )}
+                            {item.custom_number && (
+                              <div className="flex items-center gap-1.5 text-xs font-medium text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full">
+                                <span className="text-blue-500">#</span>
+                                <span className="font-bold">{item.custom_number}</span>
                               </div>
                             )}
                           </div>
-                          {/* Product Details */}
-                          <span className="font-body text-gray-700">
-                            {item.product_name} ({item.size}) × {item.quantity}
-                          </span>
-                        </div>
-                        <span className="font-semibold">₹{item.item_total.toFixed(2)}</span>
+                        )}
                       </div>
                     ))}
                   </div>
