@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── GLOBAL PERFORMANCE & SCROLL ─── */
+html {
+  scroll-behavior: smooth;
+  /* Prevent layout shifts */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent text flash during page transitions */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent horizontal overflow on mobile */
+  overflow-x: hidden;
+}
+
+/* GPU-accelerate elements that animate */
+.will-animate {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Images: prevent layout shift, smooth loading */
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Respect user motion preferences — kills ALL animations for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* On mobile: disable expensive backdrop-filter */
+@media (max-width: 768px) {
+  .backdrop-blur-sm,
+  .backdrop-blur {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 /* Animated Gradient Background */
 @keyframes gradient-shift {
   0% {

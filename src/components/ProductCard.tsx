@@ -21,7 +21,6 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart()
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || '')
   const [isAdding, setIsAdding] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -33,116 +32,84 @@ export default function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <div 
-      className="group relative bg-white rounded-2xl border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden w-full"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Vertical Layout Container */}
-      <div className="flex flex-col h-full">
-        {/* Top - Image Box */}
-        <div className="relative bg-gray-50 overflow-hidden h-56 sm:h-60 md:h-64 lg:h-72 rounded-xl m-2">
-          <Link to={`/product/${product.id}`}>
-            <img
-              src={product.image_url}
-              alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+    <div className="group flex flex-col w-full">
+      {/* Image Container */}
+      <Link to={`/product/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-50 mb-6">
+        <img
+          src={product.image_url}
+          alt={product.name}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+        {/* Subtle overlay on hover for premium feel without darkening */}
+        <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/5" />
+      </Link>
+
+      {/* Content Area */}
+      <div className="flex flex-col flex-1 px-1">
+        <div className="flex justify-between items-start mb-2">
+          <Link to={`/product/${product.id}`} className="group-hover:opacity-70 transition-opacity duration-300">
+            <h3 className="font-heading text-lg font-medium text-gray-900 leading-tight">
+              {product.name}
+            </h3>
           </Link>
-
-          {/* gradient overlay for readability on hover */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-          {/* Product Name - Bottom Center of Image */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-full flex justify-center px-3">
-            <Link to={`/product/${product.id}`}>
-              <h3 className="inline-block text-sm font-bold text-white bg-black/60 px-3 py-1.5 rounded-lg backdrop-blur-sm line-clamp-2 text-center max-w-[90%] transition-transform duration-200 ease-out transform-gpu group-hover:translate-x-10">
-                {product.name}
-              </h3>
-            </Link>
-          </div>
+          <span className="font-heading text-lg font-semibold text-gray-900 ml-4 whitespace-nowrap">
+            ₹{product.price.toLocaleString('en-IN')}
+          </span>
         </div>
+        
+        <p className="font-body text-sm text-gray-500 line-clamp-1 mb-6">
+          {product.description}
+        </p>
 
-        {/* Bottom - Content */}
-
-        {/* Bottom - Content */}
-        <div className="p-4 flex flex-col justify-between flex-1">
-          {/* Top Section - Description & Price */}
-          <div className="space-y-3">
-            <div>
-              <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
-                DESC
-              </h4>
-              <p className="text-gray-800 text-xs leading-relaxed line-clamp-2">
-                {product.description}
-              </p>
-            </div>
-
-            {/* Price */}
-            <div>
-              <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
-                PRICE
-              </h4>
-              <div className="text-lg font-bold text-gray-900">
-                ₹{product.price.toLocaleString('en-IN')}
+        <div className="mt-auto space-y-4">
+          {product.sizes.length > 0 && product.in_stock && (
+            <div className="relative">
+              <select
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                className="w-full appearance-none bg-transparent border-b border-gray-200 py-2 text-sm text-gray-900 focus:outline-none focus:border-gray-900 transition-colors cursor-pointer pr-8"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {product.sizes.map((size) => (
+                  <option key={size} value={size}>
+                    Size: {size}
+                  </option>
+                ))}
+              </select>
+              {/* Custom Dropdown Arrow */}
+              <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 flex items-center px-2 text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
             </div>
+          )}
 
-            {/* Size Selector */}
-            {product.sizes.length > 0 && product.in_stock && (
-              <div>
-                <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
-                  SIZE
-                </h4>
-                <select
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-full px-2 py-1 border-2 border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {product.sizes.map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-
-          {/* Bottom Section - Add to Cart Button */}
-          <div className="mt-3">
-            {product.in_stock ? (
-              <button
-                onClick={handleAddToCart}
-                disabled={isAdding || !selectedSize}
-                className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-xs"
-              >
-                {isAdding ? (
-                  <>
-                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Adding...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="h-3 w-3" />
-                    <span>Add to Cart</span>
-                  </>
-                )}
-              </button>
-            ) : (
-              <button
-                disabled
-                className="w-full bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded cursor-not-allowed uppercase tracking-wider text-xs"
-              >
-                Out of Stock
-              </button>
-            )}
-          </div>
+          {product.in_stock ? (
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding || !selectedSize}
+              className="w-full flex items-center justify-center gap-2 py-3 border border-gray-900 bg-transparent hover:bg-gray-900 hover:text-white text-gray-900 transition-all duration-300 text-sm tracking-widest uppercase font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isAdding ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <span>Adding</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Add to Cart</span>
+                </>
+              )}
+            </button>
+          ) : (
+            <div className="w-full text-center py-3 border border-gray-200 text-gray-400 text-sm tracking-widest uppercase font-medium">
+              Out of Stock
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Removed Heart Button as requested */}
     </div>
   )
 }

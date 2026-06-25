@@ -17,6 +17,7 @@ import TermsOfService from './pages/TermsOfService'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import BlueLockPage from './pages/BlueLockPage'
+import CustomJerseysPage from './pages/CustomJerseysPage'
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/blue-lock" element={<BlueLockPage />} />
+              <Route path="/custom-jerseys" element={<CustomJerseysPage />} />
             </Routes>
           </div>
         </Router>
