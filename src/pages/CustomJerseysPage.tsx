@@ -480,7 +480,7 @@ export default function CustomJerseysPage() {
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://wa.me/918069xxxxxx"
+                href="https://wa.me/message/QVBDIHHUBANYM1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-white text-black px-8 py-4 text-sm font-semibold tracking-widest uppercase hover:bg-white/90 transition-colors"
@@ -489,7 +489,7 @@ export default function CustomJerseysPage() {
                 WhatsApp Us
               </a>
               <a
-                href="mailto:custom@skatious.com"
+                href="mailto:support@skatious.com"
                 className="inline-flex items-center justify-center gap-2 border border-white/20 text-white px-8 py-4 text-sm font-semibold tracking-widest uppercase hover:border-white/50 transition-colors"
               >
                 <ArrowRight className="w-4 h-4" />

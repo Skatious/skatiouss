@@ -804,6 +804,9 @@ export default function CheckoutPage() {
                   <strong>COD orders</strong> take <strong>15-17 days</strong> for delivery.
                 </p>
                 <p className="mb-3">
+                  We will contact you to confirm your COD order with <strong>+91 7999856569</strong> this number. Please ensure any call regarding your Skatious order is from this number to avoid <strong>scams</strong>.
+                </p>
+                <p className="mb-3">
                   <strong>Prepaid orders</strong> arrive in <strong>6-7 days</strong>.
                 </p>
                 <p className="text-sm text-gray-500">
