@@ -7,6 +7,9 @@ import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import PlayersShowcase from '../components/PlayersShowcase';
 import ExploreSection from '../components/ExploreSection';
+import bannerImg from '../../assets/banner.jpeg';
+import cert1Img from '../../assets/cert1.jpeg';
+import cert2Img from '../../assets/cert2.jpeg';
 
 interface Product {
   id: string;
@@ -229,6 +232,7 @@ export default function HomePage() {
 
   const [statsInView, setStatsInView] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
+  const [certModal, setCertModal] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -496,6 +500,115 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* ── Cashback Scheme Banner ── */}
+      <motion.section
+        className="relative py-16 bg-gradient-to-br from-navy-900 via-[#0a1628] to-navy-900 overflow-hidden"
+        variants={scrollRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
+        {/* Background glow orbs */}
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-20 -left-20 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"
+        />
+        <motion.div
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.25, 0.1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          className="absolute -bottom-20 -right-20 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"
+        />
+
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Section label */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-center mb-8"
+          >
+            <motion.span
+              animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold tracking-widest uppercase"
+              style={{
+                background: 'linear-gradient(90deg, #10b981, #34d399, #10b981)',
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                border: '1px solid rgba(16,185,129,0.4)',
+              }}
+            >
+              <Sparkles className="h-4 w-4 text-emerald-400" style={{ WebkitTextFillColor: 'initial' }} />
+              Exclusive Offer
+            </motion.span>
+          </motion.div>
+
+          {/* Banner Image with glowing frame */}
+          <motion.div
+            whileHover={{ scale: 1.015 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            className="relative rounded-3xl overflow-hidden"
+            style={{
+              boxShadow: '0 0 0 1px rgba(16,185,129,0.25), 0 0 60px rgba(16,185,129,0.15), 0 30px 60px rgba(0,0,0,0.5)',
+            }}
+          >
+            {/* Shimmer overlay on hover */}
+            <motion.div
+              className="absolute inset-0 z-10 pointer-events-none"
+              initial={{ x: '-100%', opacity: 0 }}
+              whileInView={{ x: '200%', opacity: [0, 0.4, 0] }}
+              transition={{ duration: 1.8, delay: 0.5, ease: 'easeInOut' }}
+              viewport={{ once: true }}
+              style={{
+                background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%)',
+              }}
+            />
+
+            {/* Corner accent badges */}
+            <div className="absolute top-4 left-4 z-20 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-emerald-500/40 uppercase tracking-wider">
+              🎉 Earn Cashback
+            </div>
+
+            <img
+              src={bannerImg}
+              alt="Skatious Cashback Scheme - Order jerseys and earn cashback"
+              className="w-full h-auto object-cover block"
+              style={{ maxHeight: '520px', objectPosition: 'center' }}
+            />
+          </motion.div>
+
+          {/* CTA below banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                to="/products"
+                className="group inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3.5 rounded-2xl font-semibold text-base transition-all duration-300 shadow-xl shadow-emerald-900/40"
+              >
+                Order Jerseys Now
+                <motion.span
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </motion.span>
+              </Link>
+            </motion.div>
+            <p className="text-gray-400 text-sm">
+              Order 3-4 jerseys · Post on Instagram · Get cashback in 24 hrs
+            </p>
+          </motion.div>
+        </div>
+      </motion.section>
+
       {/* Explore Section - Blog, Replica, Blue Lock */}
       <ExploreSection />
 
@@ -671,8 +784,100 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
+
+          {/* ── Quality Certificates ── */}
+          <motion.div
+            variants={scrollRevealVariants}
+            className="mt-16"
+          >
+            <div className="text-center mb-10">
+              <h3 className="text-2xl font-bold text-white mb-3">Certified Quality You Can Trust</h3>
+              <div className="w-16 h-0.5 bg-emerald-400 mx-auto rounded-full" />
+              <p className="text-gray-400 mt-3 text-base">Our fabrics are independently tested and certified.</p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+              {[
+                { img: cert1Img, title: 'Intertek Test Report', subtitle: 'BHS Standard · Lab No. 2004/050', badge: 'Tested' },
+                { img: cert2Img, title: 'OEKO-TEX® Standard 100', subtitle: 'Certificate valid until 31.05.2028', badge: 'Certified' },
+              ].map((cert, i) => (
+                <motion.div
+                  key={i}
+                  variants={scrollRevealVariants}
+                  transition={{ delay: i * 0.15 }}
+                  whileHover={{ y: -6, scale: 1.02 }}
+                  onClick={() => setCertModal(cert.img)}
+                  className="relative cursor-pointer rounded-2xl overflow-hidden group"
+                  style={{
+                    boxShadow: '0 0 0 1px rgba(16,185,129,0.2), 0 0 30px rgba(16,185,129,0.08), 0 20px 40px rgba(0,0,0,0.4)',
+                  }}
+                >
+                  {/* Cert image thumbnail */}
+                  <div className="bg-white/5 backdrop-blur-sm">
+                    <img
+                      src={cert.img}
+                      alt={cert.title}
+                      className="w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      style={{ height: '200px' }}
+                    />
+                  </div>
+
+                  {/* Gradient overlay at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                  {/* Verified badge top-right */}
+                  <div className="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg shadow-emerald-900/50 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    {cert.badge}
+                  </div>
+
+                  {/* Text info bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-white font-semibold text-sm">{cert.title}</p>
+                    <p className="text-gray-300 text-xs mt-0.5">{cert.subtitle}</p>
+                  </div>
+
+                  {/* Click hint */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 text-white text-xs font-medium border border-white/20">
+                      Click to view
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </motion.section>
+
+      {/* Certificate Lightbox Modal */}
+      {certModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setCertModal(null)}
+        >
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.85, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="relative max-w-2xl w-full rounded-3xl overflow-hidden shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <img src={certModal} alt="Certificate" className="w-full h-auto block" />
+            <button
+              onClick={() => setCertModal(null)}
+              className="absolute top-4 right-4 w-9 h-9 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition-colors text-lg font-bold"
+            >
+              ×
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Testimonials Section with Scroll Reveal */}
       <motion.section 
