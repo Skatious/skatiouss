@@ -618,7 +618,7 @@ export default function HomePage() {
         variants={scrollRevealVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: true, amount: 0.1 }}
       >
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
