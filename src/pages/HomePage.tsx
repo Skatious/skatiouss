@@ -1,132 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, easeInOut } from 'framer-motion';
 import { ArrowRight, Star, Sparkles, Truck, Shield, Headphones, Quote } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import Footer from '../components/Footer';
-import ProductCard from '../components/ProductCard';
 import PlayersShowcase from '../components/PlayersShowcase';
 import ExploreSection from '../components/ExploreSection';
 import bannerImg from '../../assets/banner.jpeg';
 import cert1Img from '../../assets/cert1.jpeg';
 import cert2Img from '../../assets/cert2.jpeg';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  sizes: string[];
-  in_stock: boolean;
-  image_url: string;
-}
-
 export default function HomePage() {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const { scrollY } = useScroll();
   const heroParallax = useTransform(scrollY, [0, 500], [0, -150]);
 
-  useEffect(() => {
-    loadFeaturedProducts();
-  }, []);
-
-  const loadFeaturedProducts = async () => {
-    try {
-      const { data: products } = await supabase
-        .from('products')
-        .select(`
-          id,
-          name,
-          description,
-          price,
-          sizes,
-          in_stock,
-          product_images!inner (
-            image_url,
-            order_index
-          )
-        `)
-        .limit(6);
-
-      if (products && products.length > 0) {
-        const formattedProducts = products.map(product => ({
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          sizes: product.sizes,
-          in_stock: product.in_stock,
-          image_url: product.product_images[0]?.image_url || 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg',
-        }));
-        setFeaturedProducts(formattedProducts);
-      } else {
-        // Fallback to mock data only if no real products found
-        setFeaturedProducts([
-          {
-            id: '1',
-            name: 'Premium Cotton Tee',
-            description: 'Soft, comfortable cotton t-shirt with modern fit',
-            price: 29.99,
-            sizes: ['XS', 'S', 'M', 'L', 'XL'],
-            in_stock: true,
-            image_url: 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg'
-          },
-          {
-            id: '2',
-            name: 'Urban Hoodie',
-            description: 'Stylish hoodie perfect for casual wear and street style',
-            price: 49.99,
-            sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-            in_stock: true,
-            image_url: 'https://images.pexels.com/photos/1629781/pexels-photo-1629781.jpeg'
-          },
-          {
-            id: '3',
-            name: 'Classic Denim Jacket',
-            description: 'Timeless denim jacket with modern styling',
-            price: 79.99,
-            sizes: ['XS', 'S', 'M', 'L', 'XL'],
-            in_stock: true,
-            image_url: 'https://images.pexels.com/photos/1010973/pexels-photo-1010973.jpeg'
-          }
-        ]);
-      }
-    } catch (error) {
-      console.error('Error loading featured products:', error);
-      // Mock data for demonstration if database error
-      setFeaturedProducts([
-        {
-          id: '1',
-          name: 'Premium Cotton Tee',
-          description: 'Soft, comfortable cotton t-shirt with modern fit',
-          price: 29.99,
-          sizes: ['XS', 'S', 'M', 'L', 'XL'],
-          in_stock: true,
-          image_url: 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg'
-        },
-        {
-          id: '2',
-          name: 'Urban Hoodie',
-          description: 'Stylish hoodie perfect for casual wear and street style',
-          price: 49.99,
-          sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-          in_stock: true,
-          image_url: 'https://images.pexels.com/photos/1629781/pexels-photo-1629781.jpeg'
-        },
-        {
-          id: '3',
-          name: 'Classic Denim Jacket',
-          description: 'Timeless denim jacket with modern styling',
-          price: 79.99,
-          sizes: ['XS', 'S', 'M', 'L', 'XL'],
-          in_stock: true,
-          image_url: 'https://images.pexels.com/photos/1010973/pexels-photo-1010973.jpeg'
-        }
-      ]);
-    }
-    setLoading(false);
-  };
 
   const stats = [
     { value: '100+', label: 'Happy Customers', description: 'Fashion enthusiasts worldwide' },
@@ -657,65 +543,6 @@ export default function HomePage() {
         <PlayersShowcase/>
       </motion.section>
 
-      {/* Products Section with Scroll Reveal */}
-      <motion.section 
-        className="py-24 bg-white"
-        variants={scrollRevealVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-      >
-        <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            variants={scrollRevealVariants}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-navy-900 mb-6">
-              Hot Selling Products
-            </h2>
-            <div className="w-24 h-1 bg-emerald-600 mx-auto mb-6 rounded-full" />
-            <p className="text-xl text-gray-600">
-              Discover our most popular and fast selling clothing pieces.
-            </p>
-          </motion.div>
-          
-          {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(3)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="bg-gray-200 animate-pulse rounded-2xl h-96"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {featuredProducts.slice(0, 3).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
-          
-          <motion.div
-            variants={scrollRevealVariants}
-            transition={{ delay: 0.5 }}
-            className="text-center"
-          >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link
-                to="/products"
-                className="inline-flex items-center space-x-2 bg-navy-800 hover:bg-navy-900 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors duration-200 shadow-lg"
-              >
-                <span>View All Products</span>
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-      </motion.section>
 
       {/* Stats Section with Scroll Reveal */}
       <motion.section 
