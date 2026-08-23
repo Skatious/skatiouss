@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, easeInOut } from 'framer-motion';
 import { ArrowRight, Star, Sparkles, Truck, Shield, Headphones, Quote } from 'lucide-react';
